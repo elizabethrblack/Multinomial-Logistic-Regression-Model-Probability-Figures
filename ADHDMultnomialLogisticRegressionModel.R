@@ -7,7 +7,8 @@ beta_YA <- c(intercept = -6.3, LR = 0.06, SS = 0.06, Age = 0.00, Gender = 0.43)
 beta_SA <- c(intercept = -3.2, LR = 0.02, SS = 0.05, Age = -0.02, Gender = -0.45)
 
 ss_values <- seq(19, 69, length.out = 100)  #19 is the min and 69 is the max, 100 is the spacing between values and how they are read
-df <- expand.grid(SS = ss_values, LR = 37.43, Age = 22, Gender = 1)   #here, I'm pulling out the variable I created above and adding the means from LR scores and age. Gender is 1 (male) because it was what was available in the SPSS output. I am adding it to a data frame which is a collection of vectors. 
+df <- expand.grid(SS = ss_values, LR = 37.43, Age = 22, Gender = 1)   #here, I'm pulling out the variable I created above and adding the means from LR scores and age. 
+#Gender is 1 (male) because it was what was available in the SPSS output. I am adding it to a data frame which is a collection of vectors. 
 
 
 df <- df %>%
@@ -25,10 +26,12 @@ df <- df %>%
     prob_SA = exp_SA / sum_exp,
     prob_NoA = 1 / sum_exp
   )
-#these last two steps relate to the mathematical calculation of probability in regression models. Specifically, I am using the softmax function which is used for multinominal logistic regression.
+#these last two steps relate to the mathematical calculation of probability in regression models. 
+#Specifically, I am using the softmax function which is used for multinominal logistic regression.
 df_long <- df %>%
   select(SS, prob_YA, prob_SA, prob_NoA) %>%
-  pivot_longer(cols = starts_with("prob_"), names_to = "Outcome", values_to = "Probability") #this step involves changing the format of my data/vectors so that it can be read by the package I use to plot
+  pivot_longer(cols = starts_with("prob_"), names_to = "Outcome", values_to = "Probability") 
+#this step involves changing the format of my data/vectors so that it can be read by the package I use to plot
 #These are the labels for the lines
 subtitle_text <- paste0(
   "P(Y) = exp(", 
@@ -39,7 +42,8 @@ subtitle_text <- paste0(
 
 df_long$Outcome <- factor(df_long$Outcome, levels = c("prob_YA", "prob_SA", "prob_NoA"),
                           labels = c("Diagnosed ADHD", "Suspected ADHD", "Neurotypical"))
-#This is my actual plot where I have defined my axes and their labels and my main title. I defined my subtitle using a syntax that writes the equation as text rather than code 
+#This is my actual plot where I have defined my axes and their labels and my main title. 
+#I defined my subtitle using a syntax that writes the equation as text rather than code 
 ggplot(df_long, aes(x = SS, y = Probability, color = Outcome)) +
   geom_line(size = 1.2) +
   labs(
